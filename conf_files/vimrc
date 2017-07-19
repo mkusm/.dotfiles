@@ -27,11 +27,6 @@ set nocompatible
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
-set history=50		" keep 50 lines of command line history
-set ruler		" show the cursor position all the time
-set showcmd		" display incomplete commands
-set incsearch		" do incremental searching
-
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
 inoremap <C-U> <C-G>u<C-U>
@@ -51,7 +46,14 @@ autocmd BufReadPost *
   \   exe "normal! g`\"" |
   \ endif
 
+"""MAKE LIFE EASIER""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+set history=50		           " keep 50 lines of command line history
+set incsearch		             " do incremental searching
+set ignorecase               " search is case insensitive
+
 " move '~' and '.swp' files
+" ~/.vim/backup/ dir needs to be created earlier!
 set backupdir=~/.vim/backup//,.
 set directory=~/.vim/backup//,.
 
@@ -67,28 +69,43 @@ let python_highlight_all = 1 " enable all Python syntax highlighting features
 set number                   " show line numbers
 set cursorline               " show a line under the cursor's current line
 set showmatch                " show the matching for [], {} and ()
+set showcmd		               " display what you are writing as a command
 set colorcolumn=80           " show 80th column
+set ruler		                 " show the cursor position (line, column etc)
+set hlsearch                 " highlight string matched in search
 
 """INDENTATION"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 set autoindent " indent when moving to the next line
 
-autocmd Filetype python setlocal
+autocmd Filetype vim setlocal
   \ expandtab
-  \ tabstop=4
-  \ shiftwidth=4
-  \ softtabstop=4
+  \ tabstop=2
+  \ shiftwidth=2
 
 autocmd Filetype html setlocal
   \ expandtab
   \ tabstop=2
   \ shiftwidth=2
-  \ softtabstop=2
 
-" set indents after parentheses to one-indent-width
+autocmd Filetype python setlocal
+  \ expandtab
+  \ tabstop=4
+  \ shiftwidth=4
+  \ foldmethod=indent
+  \ foldlevel=99
+
+" set python indents after parentheses to one-indent-width
 let g:pyindent_open_paren = '&sw'
 let g:pyindent_nested_paren = '&sw'
 let g:pyindent_continue = '&sw'
+
+
+"""MAPPINGS""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Swap ; and :
+nnoremap ; :
+nnoremap : ;
 
 """LEADER""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

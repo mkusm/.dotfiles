@@ -138,7 +138,11 @@ if ! pgrep xcape > /dev/null; then
   xcape -e 'Shift_L=Control_L|B'
 fi
 
+# Useful for apps installed for a user
 PATH=~/.local/bin:$PATH
+
+# Enable virtualenvwrapper for python virtualenv
+# Needs virtualenvwrapper installed (pip install virtualenvwrapper)
 source virtualenvwrapper.sh
 
 # Use vi to edit command line
