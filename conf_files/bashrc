@@ -135,7 +135,7 @@ export PS1="$purple\u$green\$(__git_ps1)$blue \W$ $reset"
 
 # Tapped left shift acts as CTRL+B
 if ! pgrep xcape > /dev/null; then
-  xcape -e 'Shift_L=Control_L|B'
+  xcape -e 'Shift_R=Control_L|B'
 fi
 
 # Useful for apps installed for a user
