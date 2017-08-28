@@ -149,3 +149,7 @@ source virtualenvwrapper.sh
 set -o vi
 export EDITOR=vim
 
+# Crypto aliases
+alias mine='/home/mk/apps/claymore_miner/start.bash'
+alias mineli='mine -li 10'
+alias minesli='mine -li 10 -ttli 60'
