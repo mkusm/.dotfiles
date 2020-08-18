@@ -1,0 +1,29 @@
+[alias]
+	s = status
+	ch = checkout
+	ci = commit
+	cia = commit -a
+	ciam = commit -am
+	l = log --oneline
+	d = diff
+	dt = difftool
+	f = fetch
+	rb = rebase
+
+[user]
+	email = mk@greensteam.com
+	name = Michał Kuśmierczyk
+
+[core]
+	editor = nvim
+	excludesfile = ~/.gitignore
+
+[diff]
+	tool = vimdiff
+
+[url "git@bitbucket.org:"]
+	insteadOf = bb:
+
+[url "git@github.com::"]
+	insteadOf = gh:
+
