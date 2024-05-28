@@ -127,6 +127,8 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 nmap('<space>', '<Nop>')  -- unmap space
+imap('<C-Space>', '<Nop>')  -- unmap space
+nmap('<C-Space>', '<Nop>')  -- unmap space
 
 nmap_loud('<leader>b', ':Bwipeout!<CR>')  -- delete buffer
 nmap_loud('<leader>s', ':mksession! s.vim<CR>')  -- save session
@@ -158,6 +160,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+  -- "neovim/nvim-lspconfig",
+  -- "HallerPatrick/py_lsp.nvim",
   "moll/vim-bbye",                    --delete buffer without closing window
   "Vimjas/vim-python-pep8-indent",    --python indenting
   "tpope/vim-fugitive",               --git commands
@@ -172,8 +176,8 @@ require("lazy").setup({
     config = function()
       require("nvim-surround").setup({
         keymaps = {
-          insert          = '<C-g>z',
-          insert_line     = '<C-g>Z',
+          { insert          = '<C-g>z', false },
+          { insert_line     = '<C-g>Z', false },
           normal          = '<leader>z',
           normal_cur      = '<leader>Z',
           normal_line     = '<leader>zz',
@@ -194,7 +198,11 @@ require("lazy").setup({
     "vim-airline/vim-airline",
     dependencies = { 'vim-airline/vim-airline-themes' }
   },
-  { "nvim-telescope/telescope.nvim", tag = '0.1.7', dependencies = { 'nvim-lua/plenary.nvim' } },
+  {
+    "nvim-telescope/telescope.nvim",
+    tag = '0.1.7',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+  },
   { "Wansmer/treesj", dependencies= { "nvim-treesitter/nvim-treesitter" } },
   {
     "folke/which-key.nvim",
@@ -232,7 +240,39 @@ require("lazy").setup({
   },
 })
 
-require('leap').create_default_mappings()
+-- require'lspconfig'.pyright.setup{}
+-- require'py_lsp'.setup{}
+
+
+-- local configs = require('lspconfig/configs')
+-- local util = require('lspconfig/util')
+-- local path = util.path
+-- local function get_python_path(workspace)
+--   -- Use activated virtualenv.
+--   if vim.env.VIRTUAL_ENV then
+--     return path.join(vim.env.VIRTUAL_ENV, 'bin', 'python')
+--   end
+--
+--   -- Find and use virtualenv in workspace directory.
+--   for _, pattern in ipairs({'*', '.*'}) do
+--     local match = vim.fn.glob(path.join(workspace, pattern, 'pyvenv.cfg'))
+--     if match ~= '' then
+--       return path.join(path.dirname(match), 'bin', 'python')
+--     end
+--   end
+--
+--   -- Fallback to system Python.
+--   return exepath('python3') or exepath('python') or 'python'
+-- end
+--
+-- require'lspconfig'.pyright.setup({
+--   -- ...
+--   before_init = function(_, config)
+--     config.settings.python.pythonPath = get_python_path(config.root_dir)
+--   end
+-- })
+
+require'leap'.create_default_mappings()
 
 local builtin = require('telescope.builtin')
 local is_inside_work_tree = {}
@@ -250,12 +290,22 @@ project_files = function()
   end
 end
 
-nmap('<leader>ft', ':Telescope<CR>')  -- open buffers list in Telescope
+nmap('<leader>ft', ':Telescope<CR>')
 vim.keymap.set('n', '<leader>ff', project_files, { desc = 'find files' })
+vim.keymap.set('n', '<leader>fa', builtin.find_files, { desc = 'find files' })
 vim.keymap.set('n', '<leader>fs', builtin.grep_string, { desc = 'find string under cursor' })
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'live grep' })
-vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'list buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'help tags' })
+vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = 'list buffers' })
+require('telescope').setup{
+  defaults = {
+    mappings = {
+      n = {
+        ['dd'] = require('telescope.actions').delete_buffer
+      },
+    },
+  },
+}
 
 vim.keymap.set('n', '<leader>m', require('treesj').toggle, { desc = 'toggle split/join' })
 
@@ -270,3 +320,6 @@ vim.g["airline#extensions#tabline#fnamemod"] = ':t'
 
 nmap('<leader>w', ':WhichKey<CR>')
 require("which-key").register(mappings, opts)
+
+vim.cmd.colorscheme 'catppuccin'
+vim.cmd.colorscheme 'default'
