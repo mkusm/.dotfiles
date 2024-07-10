@@ -101,6 +101,7 @@ nmap('<Down>', ':resize -2<CR>')  -- decrease window height
 nmap('<Left>', ':vertical resize +2<CR>')  -- increase window width
 nmap('<Right>', ':vertical resize -2<CR>')  -- decrease window width
 
+imap('<C-Space>', '<C-n><C-p>')  -- autocomplete
 imap('<C-J>', '<C-N>')  -- move to next completion item
 imap('<C-K>', '<C-P>')  -- move to previous completion item
 
@@ -127,7 +128,6 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 nmap('<space>', '<Nop>')  -- unmap space
-imap('<C-Space>', '<Nop>')  -- unmap space
 nmap('<C-Space>', '<Nop>')  -- unmap space
 
 nmap_loud('<leader>b', ':Bwipeout!<CR>')  -- delete buffer
@@ -139,9 +139,6 @@ nmap('<leader>r', ':NERDTreeFind<CR>')  -- find file in NERDTree
 nmap('<leader>y', '"+y')  -- copy to clipboard
 vmap('<leader>y', '"+y')  -- copy to clipboard
 nmap('<leader>p', '"+p')  -- paste from clipboard
-
-nmap('<leader>c', ':Copilot panel<CR>')  -- copilot panel
-
 
 
 ------PLUGINS-------------------------------------------------------------------
@@ -170,14 +167,22 @@ require("lazy").setup({
   "christoomey/vim-tmux-navigator",   --navigate between tmux panes
   "ggandor/leap.nvim",                --jump using s
   {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    branch = "canary",
+    dependencies = {
+      { "github/copilot.vim" },
+      { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+    },
+  },
+  {
     "kylechui/nvim-surround",         -- <leader>z]} to change [hello] to {hello}
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
     event = "VeryLazy",
     config = function()
       require("nvim-surround").setup({
         keymaps = {
-          { insert          = '<C-g>z', false },
-          { insert_line     = '<C-g>Z', false },
+          insert          = '<C-s>z',
+          insert_line     = '<C-s>Z',
           normal          = '<leader>z',
           normal_cur      = '<leader>Z',
           normal_line     = '<leader>zz',
@@ -238,11 +243,57 @@ require("lazy").setup({
       })
     end
   },
+  "habamax/vim-nod",
+  -- {
+  --   "dccsillag/magma-nvim",
+  --   build = ":UpdateRemotePlugins",
+  -- }
+  {
+    'glacambre/firenvim',
+    -- Lazy load firenvim
+    -- Explanation: https://github.com/folke/lazy.nvim/discussions/463#discussioncomment-4819297
+    lazy = not vim.g.started_by_firenvim,
+    build = function()
+        vim.fn["firenvim#install"](0)
+    end
+  },
+  {
+    -- 'mkusm/nvim-papyrus',
+    dir='/home/mk/private/projects/nvim-papyrus',
+    config = function()
+      vim.g.skyrim_install_path = 'D:\\SteamLibrary\\steamapps\\common\\Skyrim Special Edition'
+    end
+
+  }
 })
+
+vim.g.firenvim_config = {
+    globalSettings = { alt = "all" },
+    localSettings = {
+        [".*"] = {
+            cmdline  = "neovim",
+            content  = "text",
+            priority = 0,
+            selector = "textarea",
+            takeover = "never",
+            filename = "/tmp/{hostname}_{pathname%10}.py",
+        }
+    }
+}
+
+require('CopilotChat').setup()
+nmap('<leader>cc', ':CopilotChat<CR>')
+nmap('<leader>cp', ':Copilot panel<CR>')  -- copilot panel
+vim.keymap.set('i', '<C-f>', 'copilot#Accept("\\<CR>")', {
+  expr = true,
+  replace_keycodes = false
+})
+vim.g.copilot_no_tab_map = true
+imap('<C-g>', '<Plug>(copilot-accept-word)')
+imap('<C-b>', '<Plug>(copilot-accept-line)')
 
 -- require'lspconfig'.pyright.setup{}
 -- require'py_lsp'.setup{}
-
 
 -- local configs = require('lspconfig/configs')
 -- local util = require('lspconfig/util')
@@ -309,17 +360,28 @@ require('telescope').setup{
 
 vim.keymap.set('n', '<leader>m', require('treesj').toggle, { desc = 'toggle split/join' })
 
-vim.g["airline_theme"] = 'term'
--- vim.g["airline_theme"] = 'catppuccin'
-vim.g["airline#extensions#branch#enabled"] = 0  -- disable git branch
-vim.g["airline#extensions#tabline#enabled"] = 1  -- enable list of buffers
--- don't hide terminal buffers in the list of buffers
-vim.g["airline#extensions#tabline#ignore_bufadd_pat"] = 'tagbar'
--- show only the tail of filename in the list of buffers
-vim.g["airline#extensions#tabline#fnamemod"] = ':t'
-
 nmap('<leader>w', ':WhichKey<CR>')
 require("which-key").register(mappings, opts)
 
-vim.cmd.colorscheme 'catppuccin'
-vim.cmd.colorscheme 'default'
+
+------FIRENVIM------------------------------------------------------------------
+
+if vim.g.started_by_firenvim == true then
+  vim.o.laststatus = 0
+  vim.g.airline_theme = 'firenvim'
+  vim.cmd('AirlineToggle')
+  vim.o.guifont = 'JetBrainsMono NF:h10'
+  -- vim.cmd('NERDTreeToggle')
+else
+  vim.g["airline_theme"] = 'term'
+  -- vim.g["airline_theme"] = 'catppuccin'
+  vim.g["airline#extensions#branch#enabled"] = 0  -- disable git branch
+  vim.g["airline#extensions#tabline#enabled"] = 1  -- enable list of buffers
+  -- don't hide terminal buffers in the list of buffers
+  vim.g["airline#extensions#tabline#ignore_bufadd_pat"] = 'tagbar'
+  -- show only the tail of filename in the list of buffers
+  vim.g["airline#extensions#tabline#fnamemod"] = ':t'
+
+  vim.cmd.colorscheme 'catppuccin'
+  vim.cmd.colorscheme 'default'
+end
